@@ -1,0 +1,82 @@
+diff --git a/Makefile b/Makefile
+index 8b8db501..a5043bf2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,7 +3,7 @@ ifndef CONFIG
+ endif
+ 
+ ifndef LIBDIR
+-	LIBDIR=/usr/lib/
++	LIBDIR=/usr/local/lib/
+ endif
+ 
+ DPKG := $(shell dpkg-buildflags --version 2> /dev/null)
+@@ -30,19 +30,19 @@ endif
+ endif
+ 
+ PROGRAM = helm
+-BIN     = $(DESTDIR)/usr/bin
++BIN     = $(DESTDIR)/usr/local/bin
+ BINFILE = $(BIN)/$(PROGRAM)
+ LV2     = $(DESTDIR)/$(LIBDIR)/lv2/$(PROGRAM).lv2
+ VSTDIR  = $(DESTDIR)/$(LIBDIR)/lxvst
+ VST     = $(VSTDIR)/$(PROGRAM).so
+-SYSDATA = $(DESTDIR)/usr/share/$(PROGRAM)
++SYSDATA = $(DESTDIR)/usr/local/share/$(PROGRAM)
+ IMAGES  = $(SYSDATA)/icons
+ PATCHES = $(SYSDATA)/patches
+-MAN     = $(DESTDIR)/usr/share/man/man1/
+-CHANGES = $(DESTDIR)/usr/share/doc/$(PROGRAM)/
+-DESKTOP = $(DESTDIR)/usr/share/applications/
++MAN     = $(DESTDIR)/usr/local/share/man/man1/
++CHANGES = $(DESTDIR)/usr/local/share/doc/$(PROGRAM)/
++DESKTOP = $(DESTDIR)/usr/local/share/applications/
+ 
+-ICONS   = $(DESTDIR)/usr/share/icons/hicolor/
++ICONS   = $(DESTDIR)/usr/local/share/icons/hicolor/
+ ICON16  = images/helm_icon_16_1x.png
+ ICON22  = images/helm_icon_22_1x.png
+ ICON24  = images/helm_icon_24_1x.png
+diff --git a/src/common/load_save.cpp b/src/common/load_save.cpp
+index ab32f7b6..3c607732 100644
+--- a/src/common/load_save.cpp
++++ b/src/common/load_save.cpp
+@@ -20,7 +20,7 @@
+ #include "midi_manager.h"
+ #include "synth_base.h"
+ 
+-#define LINUX_FACTORY_PATCH_DIRECTORY "/usr/share/helm/patches"
++#define LINUX_FACTORY_PATCH_DIRECTORY "/usr/local/share/helm/patches"
+ #define USER_BANK_NAME "User Patches"
+ #define LINUX_BANK_DIRECTORY "~/.helm/patches"
+ #define EXPORTED_BANK_EXTENSION "helmbank"
+diff --git a/src/editor_sections/patch_browser.cpp b/src/editor_sections/patch_browser.cpp
+index 11438415..96b90c11 100644
+--- a/src/editor_sections/patch_browser.cpp
++++ b/src/editor_sections/patch_browser.cpp
+@@ -28,7 +28,7 @@
+ #define PATCHES_WIDTH_PERCENT 0.285
+ #define PATCH_INFO_WIDTH_PERCENT 0.285
+ #define TEXT_PADDING 4.0f
+-#define LINUX_SYSTEM_PATCH_DIRECTORY "/usr/share/helm/patches"
++#define LINUX_SYSTEM_PATCH_DIRECTORY "/usr/local/share/helm/patches"
+ #define LINUX_USER_PATCH_DIRECTORY "~/.helm/User Patches"
+ #define BROWSING_HEIGHT 430.0f
+ #define BROWSE_PADDING 8.0f
+diff --git a/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/cpu.c b/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/cpu.c
+index 4eac42e9..0388afd7 100644
+--- a/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/cpu.c
++++ b/JUCE/modules/juce_audio_formats/codecs/flac/libFLAC/cpu.c
+@@ -244,11 +244,7 @@ void FLAC__cpu_info(FLAC__CPUInfo *info)
+ 		struct sigaction sigill_save;
+ 		struct sigaction sigill_sse;
+ 		sigill_sse.sa_sigaction = sigill_handler_sse_os;
+-      #ifdef __ANDROID__
+-        sigemptyset (&sigill_sse.sa_mask);
+-      #else
+-		__sigemptyset(&sigill_sse.sa_mask);
+-      #endif
++		sigemptyset (&sigill_sse.sa_mask);
+ 		sigill_sse.sa_flags = SA_SIGINFO | SA_RESETHAND; /* SA_RESETHAND just in case our SIGILL return jump breaks, so we don't get stuck in a loop */
+ 		if(0 == sigaction(SIGILL, &sigill_sse, &sigill_save))
+ 		{
